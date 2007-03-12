@@ -1,5 +1,5 @@
 #include <ctype.h>
-#include "String.h"
+#include "StringWrap.h"
 
 #ifdef _UNICODE
 # define STRCHR wcschr

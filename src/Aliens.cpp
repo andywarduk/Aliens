@@ -6,7 +6,7 @@
 #include <SDL.h>
 #include <SDL_thread.h>
 
-#include "String.h"
+#include "StringWrap.h"
 
 #define MSPERFRAME 50 // 20fps
 //#define MSPERFRAME 20 // 50fps
