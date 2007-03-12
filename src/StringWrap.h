@@ -2,7 +2,21 @@
 #define MY_STRING_H_INCLUDED
 
 #include <xstring>
-#include <windows.h>
+#include <stdarg.h>
+
+#ifdef _WIN32
+# include <tchar.h>
+#else
+# define TCHAR char
+#endif
+
+#ifndef TEXT
+# ifdef UNICODE
+#  define TEXT(x) Lx
+# else
+#  define TEXT(x) x
+# endif
+#endif
 
 #define ZEROPAD	0x01		/* pad with zero */
 #define SIGN	0x02		/* unsigned/signed long */
@@ -29,6 +43,7 @@ private:
 	int GetNumber(TCHAR **);
 public:
 	void String::Printf(const TCHAR *,...);
+	void String::VPrintf(const TCHAR *,va_list);
 	String& operator=(const String& _X)		{ThisString.assign(_X.ThisString); return *this;}
 	String& operator=(const TCHAR *_S)		{ThisString.assign(_S); return *this;}
 	String& operator=(TCHAR _C)				{ThisString.assign(1, _C); return *this;}

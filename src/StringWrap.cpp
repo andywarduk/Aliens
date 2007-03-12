@@ -1,4 +1,3 @@
-#include <stdarg.h>
 #include <ctype.h>
 #include "String.h"
 
@@ -13,6 +12,14 @@
 void String::Printf(const TCHAR *Format,...)
 {
 	va_list Args;
+
+	va_start(Args,Format);
+	VPrintf(Format,Args);
+	va_end(Args);
+}
+
+void String::VPrintf(const TCHAR *Format,va_list Args)
+{
 	TCHAR *PercentPtr,*Start,*AddStr;
 	unsigned long AddNum;
 	int OutLen,StrLen;
@@ -22,7 +29,6 @@ void String::Printf(const TCHAR *Format,...)
 	
 	PercentPtr=(TCHAR *)Format;
 	Start=(TCHAR *)Format;
-	va_start(Args,Format);
 	while((PercentPtr=STRCHR(Start,'%'))!=NULL){
 		OutLen=(int)(PercentPtr-Start);
 		// Output string up to %
@@ -170,7 +176,6 @@ void String::Printf(const TCHAR *Format,...)
 		Start=PercentPtr;
 	}
 	if(*Start!='\x0') ThisString.append(Start);
-	va_end(Args);
 }
 
 #define ADDCHARS(CharPtr,Number) for(int i=0;i<(Number);i++) ThisString.append((TCHAR *)((CharPtr)+i))
@@ -184,7 +189,7 @@ void String::AddDouble(double Number,int Size,int Precision,int Type)
 	if(Type&LEFT) Type&=~ZEROPAD;
 	if(Type&ZEROPAD) FillChar='0';
 	// Convert to a string
-	FloatPtr=fcvt(Number,Precision,&Decimal,&DSign);
+	FloatPtr=_fcvt(Number,Precision,&Decimal,&DSign);
 	// Work out sign
 	if(Type&SIGN){
 		if(DSign){
