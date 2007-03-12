@@ -130,8 +130,12 @@ bool InitialiseScreen(int NewX,int NewY)
 			XCos=new int[ScreenX];
 			XSin=new int[ScreenX];
 			ScreenInitialised=true;
+			
+			// Explode sprites
+			ExplodeSprites();
 		}
 		else{
+			// Failed
 			ScreenX=0;
 			ScreenY=0;
 		}
@@ -333,11 +337,12 @@ int RenderLoop(void *Data)
 	return 0;
 }
 
+#ifdef _WIN32
 int WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, INT)
+#else
+int main(int ArgC,char **ArgV)
+#endif
 {
-	// Explode sprites
-	ExplodeSprites();
-
 	if(SDL_Init(SDL_INIT_VIDEO) < 0){
        // TODO MessageBox(NULL,"Unable to init SDL",MB_OK);
         exit(1);
@@ -391,4 +396,6 @@ int WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, INT)
 
 	// Destroy mutex
 	SDL_DestroyMutex(ScreenMutex);
+
+	return 0;
 }
