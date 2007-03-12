@@ -111,6 +111,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="3"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="true"
+				EnableFiberSafeOptimizations="true"
+				WholeProgramOptimization="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -164,7 +171,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Common\String.cpp"
+				RelativePath=".\src\StringWrap.cpp"
 				>
 			</File>
 		</Filter>
