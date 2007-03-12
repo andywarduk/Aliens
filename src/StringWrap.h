@@ -1,7 +1,11 @@
 #ifndef MY_STRING_H_INCLUDED
 #define MY_STRING_H_INCLUDED
 
-#include <xstring>
+#ifdef _WIN32
+# include <xstring>
+#else
+# include <string>
+#endif
 #include <stdarg.h>
 
 #ifdef _WIN32
@@ -42,8 +46,8 @@ private:
 	int NumberDivide(unsigned long *,int);
 	int GetNumber(TCHAR **);
 public:
-	void String::Printf(const TCHAR *,...);
-	void String::VPrintf(const TCHAR *,va_list);
+	void Printf(const TCHAR *,...);
+	void VPrintf(const TCHAR *,va_list);
 	String& operator=(const String& _X)		{ThisString.assign(_X.ThisString); return *this;}
 	String& operator=(const TCHAR *_S)		{ThisString.assign(_S); return *this;}
 	String& operator=(TCHAR _C)				{ThisString.assign(1, _C); return *this;}

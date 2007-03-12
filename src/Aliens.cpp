@@ -6,7 +6,7 @@
 #include <SDL.h>
 #include <SDL_thread.h>
 
-#include "../Common/String.h"
+#include "String.h"
 
 #define MSPERFRAME 50 // 20fps
 //#define MSPERFRAME 20 // 50fps
@@ -392,6 +392,7 @@ void Error(char *Message,...)
 #ifdef _WIN32
 	MessageBox(GetActiveWindow(),MessageString.CStr(),TEXT("Error"),MB_OK|MB_ICONSTOP);
 #else
+	MessageString+="\n";
 	fprintf(stderr,MessageString.CStr());
 #endif
 }
@@ -413,6 +414,7 @@ void Debug(char *Message,...)
 	Index=SendDlgItemMessage(hDbgDlg,IDC_DEBUG,LB_ADDSTRING,0,(LPARAM)MessageString.CStr());
 	if(Index!=LB_ERR) SendDlgItemMessage(hDbgDlg,IDC_DEBUG,LB_SETCURSEL,Index,0);
 # else
+	MessageString+="\n";
 	fprintf(stdout,MessageString.CStr());
 # endif
 }

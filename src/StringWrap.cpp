@@ -4,9 +4,11 @@
 #ifdef _UNICODE
 # define STRCHR wcschr
 # define STRLEN wcslen
+# define ISDIGIT iswdigit
 #else
 # define STRCHR strchr
 # define STRLEN strlen
+# define ISDIGIT isdigit
 #endif
 
 void String::Printf(const TCHAR *Format,...)
@@ -61,7 +63,7 @@ void String::VPrintf(const TCHAR *Format,va_list Args)
 		}while(!FinishedFlags);
 		// Get field width
 		FieldWidth=0;
-		if(iswdigit(*PercentPtr))
+		if(ISDIGIT(*PercentPtr))
 			FieldWidth=GetNumber(&PercentPtr);
 		else if(*PercentPtr=='*'){
 			++PercentPtr;
@@ -189,7 +191,7 @@ void String::AddDouble(double Number,int Size,int Precision,int Type)
 	if(Type&LEFT) Type&=~ZEROPAD;
 	if(Type&ZEROPAD) FillChar='0';
 	// Convert to a string
-	FloatPtr=_fcvt(Number,Precision,&Decimal,&DSign);
+	FloatPtr=fcvt(Number,Precision,&Decimal,&DSign);
 	// Work out sign
 	if(Type&SIGN){
 		if(DSign){
