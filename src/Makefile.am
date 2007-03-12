@@ -1,5 +1,5 @@
 bin_PROGRAMS = Aliens
-Aliens_SOURCES = Aliens.cpp String.cpp
+Aliens_SOURCES = Aliens.cpp StringWrap.cpp
 
 # set the include path found by configure
 AM_CPPFLAGS =  $(LIBSDL_CFLAGS) $(all_includes)
