@@ -191,7 +191,7 @@ void String::AddDouble(double Number,int Size,int Precision,int Type)
 	if(Type&LEFT) Type&=~ZEROPAD;
 	if(Type&ZEROPAD) FillChar='0';
 	// Convert to a string
-	FloatPtr=fcvt(Number,Precision,&Decimal,&DSign);
+	FloatPtr=_fcvt(Number,Precision,&Decimal,&DSign);
 	// Work out sign
 	if(Type&SIGN){
 		if(DSign){
