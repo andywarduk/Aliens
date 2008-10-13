@@ -16,7 +16,7 @@
 
 #ifndef TEXT
 # ifdef UNICODE
-#  define TEXT(x) Lx
+#  define TEXT(x) L##x
 # else
 #  define TEXT(x) x
 # endif
