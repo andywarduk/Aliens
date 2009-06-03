@@ -11,6 +11,8 @@
 #ifdef _WIN32
 # include <tchar.h>
 #else
+# include <stdlib.h>
+# include <string.h>
 # define TCHAR char
 #endif
 

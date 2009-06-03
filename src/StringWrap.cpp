@@ -11,6 +11,12 @@
 # define ISDIGIT isdigit
 #endif
 
+#ifdef _WIN32
+# define FCVT _fcvt
+#else
+# define FCVT fcvt
+#endif
+
 void String::Printf(const TCHAR *Format,...)
 {
 	va_list Args;
@@ -28,7 +34,7 @@ void String::VPrintf(const TCHAR *Format,va_list Args)
 	int Flags,FieldWidth,Precision,Base;
 	TCHAR Qualifier,Type;
 	bool FinishedFlags,Numeric;
-	
+
 	PercentPtr=(TCHAR *)Format;
 	Start=(TCHAR *)Format;
 	while((PercentPtr=STRCHR(Start,'%'))!=NULL){
@@ -105,7 +111,7 @@ void String::VPrintf(const TCHAR *Format,va_list Args)
 			break;
 		case 's': // String
 			AddStr=va_arg(Args,TCHAR *);
-			if(!AddStr) AddStr=TEXT("<NULL>");
+			if(!AddStr) AddStr=(TCHAR *) TEXT("<NULL>");
 			StrLen=(int) STRLEN(AddStr);
 			if(!(Flags&LEFT) && FieldWidth>StrLen){
 				AddBlank(FieldWidth-StrLen);
@@ -191,7 +197,7 @@ void String::AddDouble(double Number,int Size,int Precision,int Type)
 	if(Type&LEFT) Type&=~ZEROPAD;
 	if(Type&ZEROPAD) FillChar='0';
 	// Convert to a string
-	FloatPtr=_fcvt(Number,Precision,&Decimal,&DSign);
+	FloatPtr=FCVT(Number,Precision,&Decimal,&DSign);
 	// Work out sign
 	if(Type&SIGN){
 		if(DSign){
@@ -256,7 +262,7 @@ void String::AddNumber(long Number,int Base,int Size,int Precision,int Type)
 	TCHAR FillChar=' ',Sign=' ',Tmp[66];
 	unsigned long AbsNumber;
 	int Loop;
-	
+
 	if(Base>=2 && Base<=36){
 		if(Type&LARGE) Digits=TEXT("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 		if(Type&LEFT) Type&=~ZEROPAD;
@@ -317,7 +323,7 @@ void String::AddNumber(long Number,int Base,int Size,int Precision,int Type)
 int String::NumberDivide(unsigned long *Number,int Base)
 {
 	int Result;
-	
+
 	Result=((unsigned long)(*Number))%(unsigned)Base;
 	*Number=((unsigned long)(*Number))/(unsigned)Base;
 	return Result;
@@ -326,7 +332,7 @@ int String::NumberDivide(unsigned long *Number,int Base)
 int String::GetNumber(TCHAR **StringPtr)
 {
 	int Number=0;
-	
+
 	while(isdigit(**StringPtr)) Number=Number*10+*((*StringPtr)++)-'0';
 	return Number;
 }
