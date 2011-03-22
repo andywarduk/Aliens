@@ -1,2 +1,9 @@
 Aliens.app
 Aliens.build
+Makefile
+config.h
+config.log
+config.status
+src
+stamp-h1
+
