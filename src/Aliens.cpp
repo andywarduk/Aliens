@@ -5,6 +5,7 @@
 
 #include <SDL.h>
 #include <SDL_thread.h>
+#include <SDL_main.h>
 
 #include "StringWrap.h"
 
@@ -78,6 +79,8 @@ int *XSin=NULL;
 int *XCos=NULL;
 bool ScreenInitialised=false;
 
+bool Finished=false;
+
 const SDL_VideoInfo *VideoInfo;
 
 // Prototypes
@@ -135,9 +138,9 @@ bool InitialiseScreen(int NewX,int NewY)
 {
 	bool Ok=false;
 
-	DestroyScreen();
-
 	if(SDL_LockMutex(ScreenMutex)==0){
+		DestroyScreen();
+		
 		// Get video information
 		VideoInfo=SDL_GetVideoInfo();
 
@@ -303,7 +306,7 @@ int RenderLoop(void *)
 	bool SkipFrame=false;
 
 	StartTicks=SDL_GetTicks();
-	for(;;){
+	while(!Finished){
 		// Lock screen mutex
 		if(SDL_LockMutex(ScreenMutex)==0){
 			do{
@@ -323,6 +326,9 @@ int RenderLoop(void *)
 						SDL_UnlockSurface(Screen);
 					}
 
+					// Display
+					SDL_Flip(Screen);
+
 #ifdef _DEBUG
 					++FramesPerSecond;
 #endif
@@ -332,9 +338,6 @@ int RenderLoop(void *)
 					++SkippedPerSecond;
 #endif
 				}
-
-				// Unlock screen mutex
-				SDL_UnlockMutex(ScreenMutex);
 
 				Scale+=SInc;
 				if(Scale>=200) SInc=-4;
@@ -349,9 +352,10 @@ int RenderLoop(void *)
 					FrameCnt=0;
 				}
 
-				// Display
-				SDL_Flip(Screen);
 			} while(0);
+			
+			// Unlock screen mutex
+			SDL_UnlockMutex(ScreenMutex);
 		}
 
 		++Frames;
@@ -510,7 +514,6 @@ void MainLoop()
 {
 	SDL_Thread *RenderThread;
 	SDL_Event event;
-	bool Finished=false;
 
 	// Start render thread
 	RenderThread = SDL_CreateThread(&RenderLoop, NULL);
@@ -536,8 +539,8 @@ void MainLoop()
 		}
     }
 
-	// Stop render thread
-	SDL_KillThread(RenderThread);
+	// Wait for render thread
+	SDL_WaitThread(RenderThread,NULL);
 }
 
 #ifdef _WIN32
