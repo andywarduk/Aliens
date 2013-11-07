@@ -3,6 +3,10 @@
 # include "resource.h"
 #endif
 
+#ifdef EMSCRIPTEN
+# include <emscripten.h>
+#endif
+
 #include <SDL.h>
 #include <SDL_thread.h>
 #include <SDL_main.h>
@@ -71,7 +75,9 @@ int Sprite2Src[SPRITESRCY][SPRITESRCX]={
 Uint32 Sprite1[SPRITEY][SPRITEX];
 Uint32 Sprite2[SPRITEY][SPRITEX];
 
+#ifndef EMSCRIPTEN
 SDL_mutex *ScreenMutex=NULL;
+#endif
 int ScreenX=0;
 int ScreenY=0;
 SDL_Surface *Screen=NULL;
@@ -83,8 +89,11 @@ bool Finished=false;
 
 const SDL_VideoInfo *VideoInfo;
 
-// Prototypes
-void Debug(char *Message,...);
+#ifdef DEBUG
+void Debug(const char *Message,...);
+#else
+# define Debug(Message, ...)
+#endif
 
 #ifdef _WIN32
 HINSTANCE hGlobalInst;
@@ -138,17 +147,22 @@ bool InitialiseScreen(int NewX,int NewY)
 {
 	bool Ok=false;
 
+#ifndef EMSCRIPTEN
 	if(SDL_LockMutex(ScreenMutex)==0){
+#endif
 		DestroyScreen();
 		
 		// Get video information
 		VideoInfo=SDL_GetVideoInfo();
+        Debug("Video size: %dx%d %dbpp wm=%d", VideoInfo->current_w, VideoInfo->current_h, VideoInfo->vfmt->BitsPerPixel, VideoInfo->wm_available);
 
-//		Screen = SDL_SetVideoMode(NewX,NewY,0,SDL_ANYFORMAT|SDL_RESIZABLE|SDL_SWSURFACE);
-//		Screen = SDL_SetVideoMode(NewX,NewY,0,SDL_RESIZABLE|SDL_HWSURFACE|SDL_ANYFORMAT);
-//		Screen = SDL_SetVideoMode(NewX,NewY,0,SDL_RESIZABLE|SDL_HWSURFACE|SDL_ANYFORMAT|SDL_DOUBLEBUF);
-		Screen = SDL_SetVideoMode(NewX,NewY,0,SDL_RESIZABLE|SDL_HWSURFACE|SDL_ANYFORMAT);
-//		Screen = SDL_SetVideoMode(0,0,0,SDL_FULLSCREEN|SDL_ANYFORMAT);
+        if(VideoInfo->wm_available){
+            Screen = SDL_SetVideoMode(NewX, NewY, 0, SDL_RESIZABLE | SDL_HWSURFACE | SDL_ANYFORMAT);
+        }
+        else{
+            Screen = SDL_SetVideoMode(VideoInfo->current_w, VideoInfo->current_h, 0, SDL_RESIZABLE | SDL_HWSURFACE | SDL_ANYFORMAT);
+        }
+
 		if(Screen){
 			Ok=true;
 			ScreenX=Screen->w;
@@ -159,15 +173,19 @@ bool InitialiseScreen(int NewX,int NewY)
 			
 			// Explode sprites
 			ExplodeSprites();
+
+            Debug("Screen is %dx%d %dbpp", Screen->w, Screen->h, Screen->format->BitsPerPixel);
 		}
 		else{
 			// Failed
 			ScreenX=0;
 			ScreenY=0;
 		}
+#ifndef EMSCRIPTEN
 		SDL_UnlockMutex(ScreenMutex);
 	}
-
+#endif
+    
 	return Ok;
 }
 
@@ -287,6 +305,55 @@ void Skew(Uint32 Matrix[][SPRITEX],int Degrees,int XOff,int YOff,int Scale)
     }
 }
 
+void RenderFrame(int *FrameCnt, int *Frame, int *Angle, int *Scale, int *SInc)
+{
+#ifndef EMSCRIPTEN
+    // Lock screen mutex
+    if(SDL_LockMutex(ScreenMutex)==0){
+#endif
+        do{
+            if(Screen==NULL) break;
+            
+            // Lock screen
+            if(SDL_MUSTLOCK(Screen)){
+                if(SDL_LockSurface(Screen)<0) break;
+            }
+                
+            // Draw pixels
+            Skew((*Frame==1?Sprite1:Sprite2),*Angle,(ScreenX/2)+((50*SinTab[*Angle/2])/128),(ScreenY/2)+((50*CosTab[*Angle/2])/128),*Scale);
+                
+            // Unlock screen
+            if(SDL_MUSTLOCK(Screen)){
+                SDL_UnlockSurface(Screen);
+            }
+                
+            // Display
+            SDL_Flip(Screen);
+            
+            *Scale += *SInc;
+            if(*Scale>=200) *SInc=-4;
+            if(*Scale<=40) *SInc=4;
+            
+            *Angle+=2;
+            if(*Angle>=360) *Angle-=360;
+            
+            if(++(*FrameCnt)==FRAMESPERSPRITE){
+                if(*Frame==1) *Frame=2;
+                else *Frame=1;
+                *FrameCnt=0;
+            }
+            
+        } while(0);
+        
+#ifndef EMSCRIPTEN
+        // Unlock screen mutex
+        SDL_UnlockMutex(ScreenMutex);
+    }
+#endif
+}
+
+#ifndef EMSCRIPTEN
+
 int RenderLoop(void *)
 {
 	int Scale=100,SInc=4;
@@ -295,7 +362,7 @@ int RenderLoop(void *)
 	int Frame=1;
 	Uint32 StartTicks;
 	Uint32 Ticks;
-#ifdef _DEBUG
+#ifdef DEBUG
 	Uint32 Seconds;
 	Uint32 LastSeconds=0;
 	Uint32 FramesPerSecond=0;
@@ -307,62 +374,23 @@ int RenderLoop(void *)
 
 	StartTicks=SDL_GetTicks();
 	while(!Finished){
-		// Lock screen mutex
-		if(SDL_LockMutex(ScreenMutex)==0){
-			do{
-				if(Screen==NULL) break;
-
-				if(!SkipFrame){
-					// Lock screen
-				    if(SDL_MUSTLOCK(Screen)){
-				        if(SDL_LockSurface(Screen)<0) break;
-				    }
-
-					// Draw pixels
-					Skew((Frame==1?Sprite1:Sprite2),Angle,(ScreenX/2)+((50*SinTab[Angle/2])/128),(ScreenY/2)+((50*CosTab[Angle/2])/128),Scale);
-
-					// Unlock screen
-					if(SDL_MUSTLOCK(Screen)){
-						SDL_UnlockSurface(Screen);
-					}
-
-					// Display
-					SDL_Flip(Screen);
-
-#ifdef _DEBUG
-					++FramesPerSecond;
+        if(!SkipFrame){
+            RenderFrame(&FrameCnt, &Frame, &Angle, &Scale, &SInc);
+#ifdef DEBUG
+            ++FramesPerSecond;
 #endif
-				}
-				else{
-#ifdef _DEBUG
-					++SkippedPerSecond;
+        }
+        else{
+#ifdef DEBUG
+            ++SkippedPerSecond
 #endif
-				}
-
-				Scale+=SInc;
-				if(Scale>=200) SInc=-4;
-				if(Scale<=40) SInc=4;
-         
-				Angle+=2;
-				if(Angle>=360) Angle-=360;
-
-				if(++FrameCnt==FRAMESPERSPRITE){
-					if(Frame==1) Frame=2;
-					else Frame=1;
-					FrameCnt=0;
-				}
-
-			} while(0);
-			
-			// Unlock screen mutex
-			SDL_UnlockMutex(ScreenMutex);
-		}
+        }
 
 		++Frames;
 		Ticks=SDL_GetTicks();
 		ElapsedTicks=Ticks-StartTicks;
 
-#ifdef _DEBUG
+#ifdef DEBUG
 		Seconds=ElapsedTicks/1000;
 		if(Seconds!=LastSeconds){
 			Debug("Secs=%ld, FPS=%ld, Skipped=%ld",Seconds,FramesPerSecond,SkippedPerSecond);
@@ -384,7 +412,9 @@ int RenderLoop(void *)
 	return 0;
 }
 
-void Error(char *Message,...)
+#endif
+
+void Error(const char *Message,...)
 {
 	String MessageString;
 	va_list Args;
@@ -397,12 +427,12 @@ void Error(char *Message,...)
 	MessageBox(GetActiveWindow(),MessageString.CStr(),TEXT("Error"),MB_OK|MB_ICONSTOP);
 #else
 	MessageString+="\n";
-	fprintf(stderr,MessageString.CStr());
+	fputs(MessageString.CStr(), stderr);
 #endif
 }
 
 #ifdef DEBUG
-void Debug(char *Message,...)
+void Debug(const char *Message,...)
 {
 	String MessageString;
 	va_list Args;
@@ -471,13 +501,15 @@ bool Initialise()
 		// Set window caption
 		SDL_WM_SetCaption("Aliens!",NULL);
 
+#ifndef EMSCRIPTEN
 		// Create screen mutex
 		ScreenMutex=SDL_CreateMutex();
 		if(ScreenMutex==NULL){
 			Error("Unable to create Mutex");
 			break;
 		}
-
+#endif
+        
 		// Create the 'screen'
 		if(InitialiseScreen(800,600)==false){
 			Error("Unable to initialise the screen");
@@ -493,11 +525,15 @@ bool Initialise()
 
 void CleanUp()
 {
+    Debug("Cleaning up");
+
 	// Destroy screen
 	DestroyScreen();
 
+#ifndef EMSCRIPTEN
 	// Delete screen mutex
 	SDL_DestroyMutex(ScreenMutex);
+#endif
 
 	// Quit SDL
 	SDL_Quit();
@@ -510,11 +546,51 @@ void CleanUp()
 #endif
 }
 
+void HandleSDLEvent(SDL_Event *event)
+{
+    switch(event->type){
+		case SDL_VIDEORESIZE:
+			if(InitialiseScreen(event->resize.w,event->resize.h)==false){
+				Error("Unable to re-create the screen");
+				Finished=true;
+			}
+			break;
+            
+		case SDL_QUIT:
+			Finished=true;
+			break;
+            
+    }
+}
+
+#ifdef EMSCRIPTEN
+
+int Scale=100;
+int SInc=4;
+int Angle=0;
+int FrameCnt=0;
+int Frame=1;
+
+void EmscriptenMainLoop()
+{
+    SDL_Event event;
+    
+    // Render the frame
+    RenderFrame(&FrameCnt, &Frame, &Angle, &Scale, &SInc);
+    
+    // Poll for events, and handle the ones we care about.
+    while (SDL_PollEvent(&event)){
+        HandleSDLEvent(&event);
+    }
+}
+
+#else // EMSCRIPTEN
+
 void MainLoop()
 {
 	SDL_Thread *RenderThread;
 	SDL_Event event;
-
+    
 	// Start render thread
 	RenderThread = SDL_CreateThread(&RenderLoop, NULL);
 	if(RenderThread==NULL){
@@ -524,24 +600,14 @@ void MainLoop()
 
 	// Event loop
     while(!Finished && SDL_WaitEvent(&event)){
-        switch(event.type){
-		case SDL_VIDEORESIZE:
-			if(InitialiseScreen(event.resize.w,event.resize.h)==false){
-				Error("Unable to re-create the screen");
-				Finished=true;
-			}
-			break;
-
-		case SDL_QUIT:
-			Finished=true;
-			break;
-
-		}
+        HandleSDLEvent(&event);
     }
 
 	// Wait for render thread
 	SDL_WaitThread(RenderThread,NULL);
 }
+
+#endif // EMSCRIPTEN
 
 #ifdef _WIN32
 int __stdcall WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, INT)
@@ -554,9 +620,18 @@ int main(int ArgC,char **ArgV)
 #endif
 
 	if(Initialise()){
+#ifdef EMSCRIPTEN
+        // Main loop for emscripten
+        emscripten_set_main_loop(EmscriptenMainLoop, 1000 / MSPERFRAME, 0);
+        // TODO emscripten_set_main_loop(EmscriptenMainLoop, 0, 0);
+#else
+        // Normal threaded main loop
 		MainLoop();
+#endif
 	}
+#ifndef EMSCRIPTEN
 	CleanUp();
-
+#endif
+    
 	return 0;
 }
