@@ -11,7 +11,6 @@
 		002F3A0009D0884600EBEB88 /* SDL.framework in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 002F39F909D0881F00EBEB88 /* SDL.framework */; };
 		792381230BA6007500FC35F1 /* StringWrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 792381210BA6007500FC35F1 /* StringWrap.cpp */; };
 		792381240BA6007500FC35F1 /* StringWrap.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 792381220BA6007500FC35F1 /* StringWrap.h */; };
-		79E5B1AE0BA5F6B900DF5408 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 79E5B1AD0BA5F6B900DF5408 /* Info.plist */; };
 		79EF1E1F0BA5F0F70049F02D /* Aliens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 79EF1E1E0BA5F0F70049F02D /* Aliens.cpp */; };
 		79EF1E210BA5F10C0049F02D /* SDLMain.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 79EF1E200BA5F10C0049F02D /* SDLMain.h */; };
 		79EF1E230BA5F1180049F02D /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 79EF1E220BA5F1180049F02D /* SDLMain.m */; };
@@ -40,13 +39,13 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		792381210BA6007500FC35F1 /* StringWrap.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = StringWrap.cpp; path = src/StringWrap.cpp; sourceTree = SOURCE_ROOT; };
-		792381220BA6007500FC35F1 /* StringWrap.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = StringWrap.h; path = src/StringWrap.h; sourceTree = SOURCE_ROOT; };
+		792381210BA6007500FC35F1 /* StringWrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringWrap.cpp; path = src/StringWrap.cpp; sourceTree = SOURCE_ROOT; };
+		792381220BA6007500FC35F1 /* StringWrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringWrap.h; path = src/StringWrap.h; sourceTree = SOURCE_ROOT; };
 		79E5B1AD0BA5F6B900DF5408 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; name = Info.plist; path = src/Info.plist; sourceTree = SOURCE_ROOT; };
-		79EF1E1E0BA5F0F70049F02D /* Aliens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Aliens.cpp; path = src/Aliens.cpp; sourceTree = SOURCE_ROOT; };
-		79EF1E200BA5F10C0049F02D /* SDLMain.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SDLMain.h; path = src/SDLMain.h; sourceTree = SOURCE_ROOT; };
-		79EF1E220BA5F1180049F02D /* SDLMain.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 30; name = SDLMain.m; path = src/SDLMain.m; sourceTree = SOURCE_ROOT; };
-		79EF1E280BA5F1330049F02D /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = InfoPlist.strings; sourceTree = "<group>"; };
+		79EF1E1E0BA5F0F70049F02D /* Aliens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Aliens.cpp; path = src/Aliens.cpp; sourceTree = SOURCE_ROOT; };
+		79EF1E200BA5F10C0049F02D /* SDLMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SDLMain.h; path = src/SDLMain.h; sourceTree = SOURCE_ROOT; };
+		79EF1E220BA5F1180049F02D /* SDLMain.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = SDLMain.m; path = src/SDLMain.m; sourceTree = SOURCE_ROOT; };
+		79EF1E280BA5F1330049F02D /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = InfoPlist.strings; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Aliens.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aliens.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -175,7 +174,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0410;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Aliens" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -202,7 +201,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				79EF1E290BA5F1330049F02D /* InfoPlist.strings in Resources */,
-				79E5B1AE0BA5F6B900DF5408 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,6 +235,7 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
@@ -252,7 +251,7 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INFOPLIST_FILE = src/Info.plist;
@@ -265,7 +264,6 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(HOME)/Library/Frameworks",
 					/Library/Frameworks,
@@ -279,6 +277,7 @@
 					"$(HEADER_SEARCH_PATHS)",
 				);
 				OBJROOT = "$(BUILD_DIR)/$(CONFIGURATION)";
+				ONLY_ACTIVE_ARCH = YES;
 				REZ_SEARCH_PATHS = "";
 				SDKROOT = macosx;
 			};
@@ -287,7 +286,6 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(HOME)/Library/Frameworks",
 					/Library/Frameworks,
