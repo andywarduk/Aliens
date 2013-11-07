@@ -382,7 +382,7 @@ int RenderLoop(void *)
         }
         else{
 #ifdef DEBUG
-            ++SkippedPerSecond
+            ++SkippedPerSecond;
 #endif
         }
 
