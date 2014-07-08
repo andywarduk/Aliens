@@ -207,8 +207,8 @@ signed int CosTab[]={
     int SpriteX, SpriteY; \
     \
     for(y = 0; y < ScreenY; y++){ \
-        YCos = ((y-YOff) * CosTab[Degrees] / Scale); \
-        YSin = ((y-YOff) * SinTab[Degrees] / Scale); \
+        YCos = ((y - YOff) * CosTab[Degrees] / Scale); \
+        YSin = ((y - YOff) * SinTab[Degrees] / Scale); \
         BufPtr = (Type*) Screen->pixels + (y * (Screen->pitch / Screen->format->BytesPerPixel)); \
         for(x = 0; x < ScreenX; x++){ \
             SpriteX = (XCos[x] + YSin) % SPRITEX; \
