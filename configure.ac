@@ -1,15 +1,16 @@
-AC_INIT(configure.ac)
+AC_INIT([aliens],[0.1])
 
-AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(aliens, 0.1)
+AC_CONFIG_SRCDIR([configure.ac])
 
-AC_LANG_CPLUSPLUS
+AM_INIT_AUTOMAKE
+
+AC_LANG([C++])
 AC_PROG_CXX
-AM_PROG_LIBTOOL
+LT_INIT
 
 dnl KDE_FIND_PATH(programm-name, variable-name, list of directories,
 dnl     if-not-found, test-parameter)
-AC_DEFUN(KDE_FIND_PATH,
+AC_DEFUN([KDE_FIND_PATH],
 [
    AC_MSG_CHECKING([for $1])
    if test -n "$$2"; then
@@ -87,4 +88,5 @@ AC_SUBST(LIBSDL_LIBS)
 AC_SUBST(LIBSDL_CFLAGS)
 AC_SUBST(LIBSDL_RPATH)
 
-AC_OUTPUT(Makefile src/Makefile)
+AC_CONFIG_FILES([Makefile src/Makefile])
+AC_OUTPUT
